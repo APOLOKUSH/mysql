@@ -1,0 +1,17 @@
+
+SELECT u.gender gender, domain, 
+AVG(
+ CASE cl.confirmation_datetime IS NULL THEN 0
+ ELSE 1
+END) percent
+FROM users u, Confirm_log cl
+WHERE (u.date_reg BETWEEN '2019-01-01' AND '2020-01-01') AND u.userid = cl.userid
+GROUP BY u.gender,
+CASE
+     WHEN cl.email LIKE "%gmail.com" THEN "gmail.com"
+     WHEN cl.email LIKE "%mail.ru" THEN "mail.ru"
+     WHEN cl.email LIKE "%yahoo.com" THEN "yahoo.com"
+     WHEN cl.email LIKE "%ukr.net" THEN "ukr.net"
+     WHEN cl.email LIKE "%hotmail.com" THEN "hotmail.com"
+     ELSE "OTHER"
+END AS domain
