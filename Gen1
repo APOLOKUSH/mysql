@@ -1,0 +1,19 @@
+SELECT getdate(u.date_reg) date, u.gender gender, age_group, AVG(us.session_duration)
+
+FROM users u, (SELECT us1.userid, us1.session_duration
+    FROM User_session us1, (SELECT userid, MIN(session_start_time) 
+          FROM User_session
+          GROUP BY userid
+          ) us2
+    WHERE us1.userid = us2.userid AND us1.session_start_time = us2.session_start_time
+    ) us
+    
+WHERE u.userid = us.userid AND (u.date_reg between '2019-07-01' and '2019-09-01')
+GROUP BY getdate(u.date_reg), # В разных версиях разная функция getdate
+      u.gender,
+   CASE
+       WHEN u.age < 18 THEN " < 18"
+       WHEN u.age >= 18 AND u.age < 24 THEN "18-24"
+       WHEN u.age >=24 AND u.age < 34 THEN "24-34"
+       ELSE "34 > "
+   END AS age_group
